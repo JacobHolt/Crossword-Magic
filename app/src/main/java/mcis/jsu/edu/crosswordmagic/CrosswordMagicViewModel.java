@@ -128,7 +128,22 @@ public class CrosswordMagicViewModel extends ViewModel {
         StringBuilder dString = new StringBuilder();
 
         try {
+            fields = br.readLine().trim().split("\t");
+            puzzleHeight.setValue(Integer.valueOf(fields[0]));
+            puzzleWidth.setValue(Integer.valueOf(fields[1]));
 
+            while (!(line = br.readLine()).isEmpty()){
+                fields = line.trim().split("\t");
+                String wordKey = ((new StringBuilder()).append(fields[2]).append(fields[3])).toString();
+                wordMap.put(wordKey, new Word(fields));
+
+                if (fields[3].equals("A")){
+                    aString.append(fields[2]).append(": ").append(fields[5]).append("\n");
+                }
+                else if (fields[3].equals("D")){
+                    dString.append(fields[2]).append(": ").append(fields[5]).append("\n");
+                }
+            }
             // Read from the input file using the "br" input stream shown above.  Your program
             // should get the puzzle height/width from the header row in the first line of the
             // input file.  Replace the placeholder values shown below with the values from the
@@ -137,35 +152,6 @@ public class CrosswordMagicViewModel extends ViewModel {
             // Word object to the "wordMap" hash map; for the key names, use the box number
             // followed by the direction (for example, "16D" for Box # 16, Down).
 
-            while((line = br.readLine()) != null){
-                fields = line.trim().split("\t");
-
-                if(fields.length == Word.HEADER_FIELDS){
-                    puzzleHeight.setValue(Integer.parseInt(fields[0]));
-                    puzzleWidth.setValue(Integer.parseInt(fields[1]));
-                }
-
-                else if (fields.length == Word.DATA_FIELDS) {
-
-                    Word w = new Word(fields);
-                    int key1 = w.getRow() + w.getColumn();
-                    String key2 = String.valueOf(key1);
-                    wordMap.put(key2, w);
-
-                    String key = w.getBox() + w.getDirection();
-                    wordMap.put(key, w);
-                    if (w.getDirection().equals(Word.ACROSS)) {
-                        aString.append(w.getClue());
-                    }
-                    else if ( w.getDirection().equals(Word.DOWN)) {
-                        dString.append(w.getClue());
-                        {
-                            String word = w.getWord();
-                            wordMap.put(word, w);
-                        }
-                    }
-                }
-            }
         } catch (Exception e) {}
 
         words.setValue(wordMap);
@@ -187,7 +173,16 @@ public class CrosswordMagicViewModel extends ViewModel {
 
             Word w = e.getValue();
 
-            // INSERT YOUR CODE HERE
+            for (int i = 0; i < w.getWord().length(); i++){
+                if (w.getDirection().equals("D")){
+                    aLetters[w.getRow() + i][w.getColumn()] = ' ';
+                }
+                else if (w.getDirection().equals("A")){
+                    aLetters[w.getRow()][w.getColumn() + i] = ' ';
+                }
+            }
+
+            aNumbers[w.getRow()][w.getColumn()] = w.getBox();
 
         }
 
