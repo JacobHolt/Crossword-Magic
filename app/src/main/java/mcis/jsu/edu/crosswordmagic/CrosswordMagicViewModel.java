@@ -144,6 +144,14 @@ public class CrosswordMagicViewModel extends ViewModel {
                     dString.append(fields[2]).append(": ").append(fields[5]).append("\n");
                 }
             }
+            // Read from the input file using the "br" input stream shown above.  Your program
+            // should get the puzzle height/width from the header row in the first line of the
+            // input file.  Replace the placeholder values shown below with the values from the
+            // file.  Get the data from the remaining rows, splitting each tab-delimited line
+            // into an array of strings, which you can use to initialize a Word object.  Add each
+            // Word object to the "wordMap" hash map; for the key names, use the box number
+            // followed by the direction (for example, "16D" for Box # 16, Down).
+
 
         } catch (Exception e) {}
 
@@ -166,27 +174,46 @@ public class CrosswordMagicViewModel extends ViewModel {
 
             Word w = e.getValue();
 
-            int row = w.getRow();
-            int col = w.getColumn();
-            String word = w.getWord();
-            String dir = w.getDirection();
-
-            for (int i = 0; i < word.length(); i++){
-                if (dir.equals("D")){
-                    aLetters[row + i][col] = ' ';
+            for (int i = 0; i < w.getWord().length(); i++){
+                if (w.isDown()){
+                    aLetters[w.getRow() + i][w.getColumn()] = ' ';
                 }
-                else if (dir.equals("A")){
-                    aLetters[row][col + i] = ' ';
+                else if (w.isAcross()){
+                    aLetters[w.getRow()][w.getColumn() + i] = ' ';
                 }
             }
 
-            aNumbers[row][col] = w.getBox();
+            aNumbers[w.getRow()][w.getColumn()] = w.getBox();
 
         }
 
         this.letters.setValue(aLetters);
         this.numbers.setValue(aNumbers);
 
+    }
+
+
+    public Word getWord(String key){
+        return(words.getValue().get(key));
+    }
+
+    public void addWordToGrid(String key){
+        Word w = getWord(key);
+        Character[][] aLetters = this.letters.getValue();
+        int row = w.getRow();
+        int column = w.getColumn();
+        String word = w.getWord();
+        String direction = w.getDirection();
+
+        for (int i = 0; i < word.length(); i++){
+            if (direction.equals("D")){
+                aLetters[row + i][column] = word.charAt(i);
+            }
+            else if (direction.equals("A")){
+                aLetters[row][column + i] = word.charAt(i);
+            }
+        }
+        this.letters.setValue(aLetters);
     }
 
 }
